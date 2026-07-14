@@ -9,10 +9,10 @@ set ROOT=%~dp0
 set DOTNET_EXE=D:\SyncDevice\dotnet_sdk\dotnet.exe
 
 echo Starting AI Orchestrator (Python / FastAPI)...
-start "AI Orchestrator" cmd /k "cd /d "%ROOT%apps\ai-orchestrator" && if exist .venv\Scripts\activate.bat (call .venv\Scripts\activate.bat) else (echo No .venv found - run: python -m venv .venv ^&^& pip install -e . ) && python main.py"
+start "AI Orchestrator" cmd /k "cd /d "%ROOT%apps\ai-orchestrator" && if exist .venv\Scripts\activate.bat (call .venv\Scripts\activate.bat && python main.py) else (if exist .venv\Scripts\python.exe (.venv\Scripts\python.exe main.py) else (echo No .venv found - please run: uv venv .venv ^&^& uv pip install -e .))"
 
 echo Starting UI (React / Vite)...
-start "UI Frontend" cmd /k "cd /d "%ROOT%apps\ui-frontend" && if not exist node_modules (echo Installing npm dependencies... && npm install) && npm run dev"
+start "UI Frontend" cmd /k "cd /d "%ROOT%apps\ui-frontend" && (if not exist node_modules (echo Installing npm dependencies... && call npm install)) && npm run dev"
 
 echo Waiting a few seconds for the backend/dev server to come up...
 timeout /t 8 /nobreak >nul

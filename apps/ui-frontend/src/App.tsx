@@ -12,7 +12,8 @@ type PetState = 'idle' | 'thinking' | 'talking';
 export default function App() {
   const [petState, setPetState] = useState<PetState>('idle');
   const [connectionStatus, setConnectionStatus] = useState<string>('connecting');
-  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(true);
+  const lastClickRef = React.useRef(0);
   const { response, isStreaming, startStream, appendChunk, endStream } = useAIStream();
 
   const handleNativeMessage = useCallback((msg: NativeMessage) => {
@@ -54,6 +55,27 @@ export default function App() {
     postToNative({ type: 'capture_and_ask', prompt });
   }, [startStream, postToNative]);
 
+  const handleManualCapture = useCallback(() => {
+    startStream();
+    setPetState('thinking');
+    setIsChatOpen(true);
+    postToNative({ 
+      type: 'capture_and_ask', 
+      prompt: 'Please analyze the current screen capture and highlight any notable UI bugs, code details, or layout elements.' 
+    });
+  }, [startStream, postToNative]);
+
+  const handlePetClick = useCallback(() => {
+    const now = Date.now();
+    if (now - lastClickRef.current < 350) {
+      // Double click or fast successive click — always ensure chat box & menu open
+      setIsChatOpen(true);
+    } else {
+      setIsChatOpen(prev => !prev);
+    }
+    lastClickRef.current = now;
+  }, []);
+
   const handleStreamEnd = useCallback(() => {
     endStream();
     setPetState('idle');
@@ -68,18 +90,42 @@ export default function App() {
         {!isNative && ' (dev mode)'}
       </div>
 
-      {/* 3D Companion Soldier Character (Click to toggle Chat Box) */}
+      {/* 3D Companion Character (Single/Double Click to toggle/open menu and chat) */}
       <div 
         className="pet-container" 
-        onClick={() => setIsChatOpen(prev => !prev)}
-        title="Click your companion to toggle chat"
+        onClick={handlePetClick}
+        title="Click or double-click to open screenshot menu & chat box"
       >
+        <div 
+          className="pet-click-overlay"
+          onClick={handlePetClick}
+          title="Click or double-click to open screenshot menu & chat box"
+        />
         <PetCanvas animState={petState} />
       </div>
 
-      {/* Glassmorphic Chat Panel (Appears when pet is clicked or active) */}
+      {/* Glassmorphic Action Menu & Chat Panel */}
       {isChatOpen && (
         <div className="chat-panel">
+          {/* Header Action Menu */}
+          <div className="chat-header">
+            <button 
+              className="share-screenshot-btn"
+              onClick={handleManualCapture}
+              disabled={isStreaming || connectionStatus === 'reconnecting'}
+              title="Manually capture current screen and send to AI"
+            >
+              <span>📸</span> Share Screenshot & Analyze
+            </button>
+            <button 
+              className="close-panel-btn"
+              onClick={() => setIsChatOpen(false)}
+              title="Close Menu"
+            >
+              ×
+            </button>
+          </div>
+
           <ChatBubble
             response={response}
             isStreaming={isStreaming}

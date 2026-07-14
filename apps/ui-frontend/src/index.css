@@ -103,6 +103,16 @@ body, html, #root {
   cursor: grabbing;
 }
 
+.pet-click-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  cursor: pointer;
+}
+
 /* Chat Glass Panel */
 .chat-panel {
   position: absolute;
@@ -126,6 +136,71 @@ body, html, #root {
 .chat-panel:focus-within {
   border-color: var(--border-glow);
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 32px var(--color-primary-glow);
+}
+
+/* Chat Header Menu */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+
+.share-screenshot-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 0.825rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  transition: var(--transition-smooth);
+}
+
+.share-screenshot-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+}
+
+.share-screenshot-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.share-screenshot-btn:disabled {
+  background: #334155;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.close-panel-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.close-panel-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
 }
 
 /* Chat Bubble Output */

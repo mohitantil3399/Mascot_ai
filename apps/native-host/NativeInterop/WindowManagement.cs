@@ -23,14 +23,26 @@ public static partial class WindowManagement
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool SetWindowPos(nint hWnd, nint hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MARGINS
+    {
+        public int cxLeftWidth;
+        public int cxRightWidth;
+        public int cyTopHeight;
+        public int cyBottomHeight;
+    }
+
+    [DllImport("dwmapi.dll")]
+    private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
+
     private static readonly nint HWND_TOPMOST = new(-1);
     private const uint SWP_NOMOVE = 0x0002;
     private const uint SWP_NOSIZE = 0x0001;
     private const uint SWP_NOACTIVATE = 0x0010;
 
     /// <summary>
-    /// Makes the WPF Window TOPMOST and configures transparent click-through
-    /// for all areas outside the React UI interactable components.
+    /// Makes the WPF Window TOPMOST and configures DWM sheet glass transparency
+    /// instead of WS_EX_LAYERED so that child WebView2 controls receive mouse events normally.
     /// </summary>
     public static void ConfigureOverlay(Window window)
     {
@@ -39,9 +51,13 @@ public static partial class WindowManagement
         // 1. Pin to TOPMOST above all other applications
         SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
-        // 2. Set layered tool window styles to hide from Alt+Tab and enable transparency
+        // 2. Set tool window style (hide from Alt+Tab) and ensure WS_EX_LAYERED is stripped
         int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-        SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED | WS_EX_TOOLWINDOW);
+        SetWindowLong(hwnd, GWL_EXSTYLE, (exStyle & ~WS_EX_LAYERED) | WS_EX_TOOLWINDOW);
+
+        // 3. Extend DWM glass frame across entire window (-1 margin = full sheet glass transparency)
+        var margins = new MARGINS { cxLeftWidth = -1, cxRightWidth = -1, cyTopHeight = -1, cyBottomHeight = -1 };
+        DwmExtendFrameIntoClientArea(hwnd, ref margins);
     }
 
     /// <summary>

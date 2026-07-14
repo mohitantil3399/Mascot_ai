@@ -30,6 +30,7 @@ export const useNativeBridge = (onMessage: MessageHandler) => {
         onMessageRef.current(msg);
       };
       window.chrome!.webview!.addEventListener('message', handler);
+      window.chrome!.webview!.postMessage(JSON.stringify({ type: 'get_status' }));
       return () => window.chrome!.webview!.removeEventListener('message', handler);
     }
 

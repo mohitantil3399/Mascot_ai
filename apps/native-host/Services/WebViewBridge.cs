@@ -58,9 +58,20 @@ public sealed class WebViewBridge
         {
             try
             {
-                var doc = JsonDocument.Parse(e.WebMessageAsJson);
-                var type = doc.RootElement.GetProperty("type").GetString() ?? "";
-                handler(type, doc.RootElement);
+                string jsonString = e.TryGetWebMessageAsString() ?? e.WebMessageAsJson;
+                if (string.IsNullOrEmpty(jsonString)) jsonString = e.WebMessageAsJson;
+
+                var doc = JsonDocument.Parse(jsonString);
+                var root = doc.RootElement;
+                if (root.ValueKind == JsonValueKind.String)
+                {
+                    var innerString = root.GetString() ?? "{}";
+                    doc = JsonDocument.Parse(innerString);
+                    root = doc.RootElement;
+                }
+
+                var type = root.TryGetProperty("type", out var prop) ? prop.GetString() ?? "" : "";
+                handler(type, root);
             }
             catch (Exception ex)
             {

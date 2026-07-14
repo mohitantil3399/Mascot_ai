@@ -19,6 +19,8 @@ public sealed class AIWebSocketClient : IAsyncDisposable
         _uri = uri;
     }
 
+    public bool IsConnected => _ws.State == WebSocketState.Open;
+
     public void SetBridge(WebViewBridge bridge)
     {
         _bridge = bridge;

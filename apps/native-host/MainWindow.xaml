@@ -4,7 +4,6 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         Title="Antigravity Desktop Companion" 
         WindowStyle="None" 
-        AllowsTransparency="True" 
         Background="Transparent"
         Topmost="True"
         ShowInTaskbar="False"
