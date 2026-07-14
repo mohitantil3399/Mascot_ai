@@ -60,7 +60,7 @@ export default function PetModel({ animState }: { animState: 'idle' | 'thinking'
 
     if (ringRef.current) {
       ringRef.current.rotation.z += delta * 1.5;
-      ringRef.current.rotation.x = Math.sin(time) * 0.5;
+      ringRef.current.rotation.x = (Math.PI / 2) + Math.sin(time) * 0.18;
     }
   });
 
@@ -72,8 +72,8 @@ export default function PetModel({ animState }: { animState: 'idle' | 'thinking'
       </Center>
 
       {/* Orbiting Pedestal Ring right under feet */}
-      <mesh ref={ringRef} position={[0, -0.82, 0]}>
-        <torusGeometry args={[1.0, 0.04, 16, 64]} />
+      <mesh ref={ringRef} position={[0, -0.72, 0]}>
+        <torusGeometry args={[0.72, 0.035, 16, 64]} />
         <meshStandardMaterial 
           color="#c084fc" 
           emissive="#a855f7" 

@@ -1,5 +1,5 @@
 // apps/ui-frontend/src/App.tsx
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useNativeBridge } from './hooks/useNativeBridge';
 import { useAIStream } from './hooks/useAIStream';
 import PetCanvas from './components/pet/PetCanvas';
@@ -13,7 +13,7 @@ export default function App() {
   const [petState, setPetState] = useState<PetState>('idle');
   const [connectionStatus, setConnectionStatus] = useState<string>('connecting');
   const [isChatOpen, setIsChatOpen] = useState<boolean>(true);
-  const lastClickRef = React.useRef(0);
+  const lastClickRef = useRef(0);
   const { response, isStreaming, startStream, appendChunk, endStream } = useAIStream();
 
   const handleNativeMessage = useCallback((msg: NativeMessage) => {
@@ -68,12 +68,11 @@ export default function App() {
   const handlePetClick = useCallback(() => {
     const now = Date.now();
     if (now - lastClickRef.current < 350) {
-      // Double click or fast successive click — always ensure chat box & menu open
-      setIsChatOpen(true);
-    } else {
-      setIsChatOpen(prev => !prev);
+      // Prevent double-click from immediately reverting the state opened/closed by the first click
+      return;
     }
     lastClickRef.current = now;
+    setIsChatOpen(prev => !prev);
   }, []);
 
   const handleStreamEnd = useCallback(() => {

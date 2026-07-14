@@ -26,12 +26,28 @@ export const useNativeBridge = (onMessage: MessageHandler) => {
   useEffect(() => {
     if (isNative) {
       const handler = (event: Event) => {
-        const msg = (event as CustomEvent<NativeMessage>).detail;
-        onMessageRef.current(msg);
+        const raw = (event as any).data ?? (event as CustomEvent<NativeMessage>).detail;
+        let msg = raw;
+        if (typeof raw === 'string') {
+          try {
+            msg = JSON.parse(raw);
+          } catch {
+            return;
+          }
+        }
+        if (msg && typeof msg === 'object') {
+          onMessageRef.current(msg);
+        }
       };
       window.chrome!.webview!.addEventListener('message', handler);
       window.chrome!.webview!.postMessage(JSON.stringify({ type: 'get_status' }));
-      return () => window.chrome!.webview!.removeEventListener('message', handler);
+      const statusInterval = setInterval(() => {
+        window.chrome!.webview!.postMessage(JSON.stringify({ type: 'get_status' }));
+      }, 1500);
+      return () => {
+        window.chrome!.webview!.removeEventListener('message', handler);
+        clearInterval(statusInterval);
+      };
     }
 
     // Browser (standalone) mode: connect for real instead of mocking.

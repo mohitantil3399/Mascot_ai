@@ -52,7 +52,7 @@ body, html, #root {
 .status-pill {
   position: absolute;
   top: 24px;
-  right: 24px;
+  left: 24px;
   pointer-events: auto;
   display: inline-flex;
   align-items: center;
@@ -140,6 +140,7 @@ body, html, #root {
 
 /* Chat Header Menu */
 .chat-header {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -206,6 +207,7 @@ body, html, #root {
 /* Chat Bubble Output */
 .chat-bubble-viewport {
   flex: 1;
+  min-height: 0;
   max-height: 340px;
   overflow-y: auto;
   padding-right: 6px;
@@ -239,6 +241,7 @@ body, html, #root {
 
 /* Input Bar */
 .input-bar-container {
+  flex-shrink: 0;
   display: flex;
   gap: 8px;
   position: relative;

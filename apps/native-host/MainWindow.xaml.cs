@@ -43,7 +43,7 @@ public partial class MainWindow : Window
                 int screenY = (short)((lParam.ToInt64() >> 16) & 0xFFFF);
                 System.Windows.Point pt = PointFromScreen(new System.Windows.Point(screenX, screenY));
 
-                bool inStatusPill = pt.X >= 360 && pt.Y <= 80;
+                bool inStatusPill = pt.X >= 20 && pt.X <= 260 && pt.Y <= 80;
                 bool inPetContainer = pt.X >= 30 && pt.X <= 320 && pt.Y >= 300 && pt.Y <= 560;
                 bool inChatPanel = pt.X >= 270 && pt.X <= 630 && pt.Y >= 30 && pt.Y <= 560;
 
@@ -86,8 +86,16 @@ public partial class MainWindow : Window
         // Navigate to Vite dev server or production bundle
         WebView.CoreWebView2.Navigate("http://localhost:3000");
 
-        WebView.CoreWebView2.NavigationCompleted += async (_, _) =>
+        WebView.CoreWebView2.NavigationCompleted += async (_, e) =>
         {
+            if (!e.IsSuccess)
+            {
+                Console.WriteLine($"[WebView2] Navigation failed ({e.WebErrorStatus}). Retrying in 2 seconds...");
+                await Task.Delay(2000);
+                WebView.CoreWebView2.Navigate("http://localhost:3000");
+                return;
+            }
+
             if (_bridge != null)
             {
                 await _bridge.SendStatusAsync(_wsClient.IsConnected ? "connected" : "connecting");

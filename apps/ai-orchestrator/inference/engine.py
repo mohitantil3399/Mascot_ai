@@ -11,18 +11,50 @@ from PIL import Image
 # Provider configuration — ordered by preference. Base URLs/models are
 # overridable via env vars so this works on any machine, not just the one
 # it was originally written on.
+# Simple zero-dependency .env file loader so environment variables are loaded automatically
+def _load_env_files():
+    for env_path in [
+        os.path.join(os.path.dirname(__file__), "..", ".env"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"),
+        ".env",
+    ]:
+        if os.path.exists(env_path):
+            try:
+                with open(env_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith("#") and "=" in line:
+                            k, v = line.split("=", 1)
+                            k = k.strip()
+                            v = v.strip().strip('"').strip("'")
+                            if k and k not in os.environ:
+                                os.environ[k] = v
+            except Exception as e:
+                print(f"[Engine] Note: Could not parse {env_path}: {e}")
+
+_load_env_files()
+
+# Provider configuration — ordered by preference. Base URLs/models are
+# overridable via env vars so this works on any machine.
 PROVIDERS = [
+    # Commented out offline LLM / LM Studio first approach for now:
+    # {
+    #     "name": "LM Studio (localhost Qwen2.5-VL)",
+    #     "base_url": os.environ.get("LMSTUDIO_BASE_URL", "http://localhost:1234/v1"),
+    #     "api_key": "local",
+    #     "model": os.environ.get("LMSTUDIO_MODEL", "qwen2.5-vl-3b-instruct"),
+    # },
+    # {
+    #     "name": "Ollama (local CPU fallback)",
+    #     "base_url": os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434/v1"),
+    #     "api_key": "local",
+    #     "model": os.environ.get("OLLAMA_MODEL", "llava"),
+    # },
     {
-        "name": "LM Studio (localhost Qwen2.5-VL)",
-        "base_url": os.environ.get("LMSTUDIO_BASE_URL", "http://localhost:1234/v1"),
-        "api_key": "local",
-        "model": os.environ.get("LMSTUDIO_MODEL", "qwen2.5-vl-3b-instruct"),
-    },
-    {
-        "name": "Ollama (local CPU fallback)",
-        "base_url": os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434/v1"),
-        "api_key": "local",
-        "model": os.environ.get("OLLAMA_MODEL", "llava"),
+        "name": "Mistral Pixtral Vision (Cloud API)",
+        "base_url": os.environ.get("MISTRAL_BASE_URL", "https://api.mistral.ai/v1"),
+        "api_key": os.environ.get("MISTRAL_API_KEY") or os.environ.get("mistral_api_key") or "missing-key",
+        "model": os.environ.get("MISTRAL_MODEL", "pixtral-12b-2409"),
     },
     {
         "name": "OpenAI GPT-4o (cloud fallback)",
@@ -42,6 +74,7 @@ class LocalLLM:
                 client = AsyncOpenAI(
                     base_url=p.get("base_url") or None,
                     api_key=p.get("api_key") or "dummy-key",
+                    timeout=30.0,
                 )
                 self.clients.append(client)
             except Exception as e:
@@ -69,7 +102,7 @@ class LocalLLM:
                 {"type": "text", "text": prompt},
                 {
                     "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{b64_image}", "detail": "auto"},
+                    "image_url": {"url": f"data:image/jpeg;base64,{b64_image}"},
                 },
             ],
         })

@@ -25,7 +25,7 @@ public static partial class ActiveWindowTracker
 
     /// <summary>
     /// Returns the bounding rectangle of the currently focused external application window.
-    /// Used by ScreenCapture to crop out desktop background and secondary monitors.
+    /// Available as an ROI window tracking utility for targeted screen capture cropping modes.
     /// </summary>
     public static Rectangle GetActiveAppBounds()
     {

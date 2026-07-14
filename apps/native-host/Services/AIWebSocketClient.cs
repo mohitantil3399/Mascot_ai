@@ -3,6 +3,7 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using System.IO;
 
 namespace DesktopCompanion.Services;
 
@@ -74,10 +75,18 @@ public sealed class AIWebSocketClient : IAsyncDisposable
         var buffer = new byte[16_384];
         while (_ws.State == WebSocketState.Open)
         {
-            var result = await _ws.ReceiveAsync(buffer, _cts.Token);
+            using var ms = new MemoryStream();
+            WebSocketReceiveResult result;
+            do
+            {
+                result = await _ws.ReceiveAsync(buffer, _cts.Token);
+                if (result.MessageType == WebSocketMessageType.Close) break;
+                ms.Write(buffer, 0, result.Count);
+            } while (!result.EndOfMessage);
+
             if (result.MessageType == WebSocketMessageType.Close) break;
 
-            var rawJson = Encoding.UTF8.GetString(buffer, 0, result.Count);
+            var rawJson = Encoding.UTF8.GetString(ms.ToArray());
             if (_bridge != null)
             {
                 try
