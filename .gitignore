@@ -1,0 +1,107 @@
+# ==============================================================================
+# Desktop Companion — Comprehensive .gitignore
+# Covers Python (FastAPI/ai-orchestrator), Node.js (React/ui-frontend), and .NET (WPF/native-host)
+# ==============================================================================
+
+# --- Python / AI Orchestrator ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Logs & Caches
+*.log
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+
+# --- Node.js / React UI Frontend ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+dist-ssr/
+*.local
+.vite/
+.next/
+out/
+
+
+# --- C# / .NET / WPF Native Host ---
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+TestResults/
+[Bb]uild[Ll]og.*
+*.[Pp]ublish.xml
+*.azurePubxml
+*.nupkg
+*.snupkg
+*.visualstudio.package.schema.json
+
+
+# --- OS, IDE, and Tools ---
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

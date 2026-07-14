@@ -1,0 +1,23 @@
+[project]
+name = "desktop-companion-orchestrator"
+version = "2.0.0"
+description = "July 2026 AI Orchestrator for Desktop Companion with WebSocket streaming & ROI diffing"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.111.0",
+    "uvicorn>=0.30.0",
+    "openai>=1.35.0",
+    "pillow>=10.3.0",
+    "numpy>=1.26.0",
+    "python-multipart>=0.0.9",
+    "websockets>=12.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["api*", "inference*"]
