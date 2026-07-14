@@ -27,26 +27,39 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Virtual Environments
+# Virtual Environments & Package Managers
 .venv/
 venv/
 ENV/
 env/
 env.bak/
 venv.bak/
+.uv/
+.uv_cache/
+.npm/
 
 # Environment & Secrets
 .env
 .env.*
+*.env.local
 !.env.example
+*.pem
+*.key
+secrets.*
+local.settings.json
 
-# Logs & Caches
+# Logs, Caches & Databases
 *.log
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .coverage
 htmlcov/
+.cache/
 
 
 # --- Node.js / React UI Frontend ---
@@ -56,11 +69,16 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 .pnpm-debug.log*
+dist/
+build/
 dist-ssr/
 *.local
 .vite/
 .next/
 out/
+*.tsbuildinfo
+.eslintcache
+coverage/
 
 
 # --- C# / .NET / WPF Native Host ---
