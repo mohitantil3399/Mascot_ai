@@ -14,7 +14,12 @@ export default function PetCanvas({ animState }: { animState: 'idle' | 'thinking
       <ambientLight intensity={1.2} />
       <directionalLight position={[5, 10, 5]} intensity={1.8} />
       <directionalLight position={[-5, -5, -5]} intensity={0.8} />
-      <Suspense fallback={null}>
+      <Suspense fallback={
+        <mesh position={[0, 0, 0]}>
+          <sphereGeometry args={[0.52, 32, 32]} />
+          <meshStandardMaterial color="#c084fc" emissive="#8b5cf6" emissiveIntensity={0.6} wireframe />
+        </mesh>
+      }>
         <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.18}>
           <PetModel animState={animState} />
         </Float>

@@ -43,6 +43,14 @@ public sealed class WebViewBridge
         return Task.CompletedTask;
     }
 
+    /// <summary>Tell React that the session history was reset on the backend.</summary>
+    public Task SendSessionResetAsync()
+    {
+        var msg = JsonSerializer.Serialize(new { type = "session_reset" });
+        _webView.PostWebMessageAsJson(msg);
+        return Task.CompletedTask;
+    }
+
     /// <summary>Dispatch an error message to React.</summary>
     public Task SendErrorAsync(string errorMessage)
     {

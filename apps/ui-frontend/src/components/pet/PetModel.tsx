@@ -65,15 +65,15 @@ export default function PetModel({ animState }: { animState: 'idle' | 'thinking'
   });
 
   return (
-    <group ref={groupRef} position={[0, 0, 0]} scale={[0.85, 0.85, 0.85]}>
+    <group ref={groupRef} position={[0, 0, 0]} scale={[0.68, 0.68, 0.68]}>
       {/* Centered Soldier Character Model */}
       <Center position={[0, 0, 0]}>
         <primitive object={scene} />
       </Center>
 
       {/* Orbiting Pedestal Ring right under feet */}
-      <mesh ref={ringRef} position={[0, -0.72, 0]}>
-        <torusGeometry args={[0.72, 0.035, 16, 64]} />
+      <mesh ref={ringRef} position={[0, -0.68, 0]}>
+        <torusGeometry args={[0.62, 0.03, 16, 64]} />
         <meshStandardMaterial 
           color="#c084fc" 
           emissive="#a855f7" 

@@ -50,6 +50,7 @@ local.settings.json
 
 # Logs, Caches & Databases
 *.log
+debug_*.txt
 *.sqlite
 *.sqlite3
 *.db

@@ -76,6 +76,9 @@ export const useNativeBridge = (onMessage: MessageHandler) => {
             case 'stream_cancelled':
               onMessageRef.current({ type: 'stream_end' });
               break;
+            case 'session_reset':
+              onMessageRef.current({ type: 'session_reset' });
+              break;
             case 'error':
               onMessageRef.current({ type: 'error', payload: data.payload ?? 'Unknown error' });
               break;
@@ -157,6 +160,14 @@ export const useNativeBridge = (onMessage: MessageHandler) => {
   const postToNative = useCallback((msg: ReactToNativeMessage) => {
     if (isNative) {
       window.chrome!.webview!.postMessage(JSON.stringify(msg));
+      return;
+    }
+
+    if (msg.type === 'start_session' || msg.type === 'close_session' || msg.type === 'reset_session') {
+      const ws = wsRef.current;
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: msg.type }));
+      }
       return;
     }
 

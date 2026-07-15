@@ -70,6 +70,18 @@ public sealed class AIWebSocketClient : IAsyncDisposable
         await _ws.SendAsync(imageBytes, WebSocketMessageType.Binary, true, _cts.Token);
     }
 
+    /// <summary>Send text JSON frame over WebSocket.</summary>
+    public async Task SendTextMessageAsync(string jsonMessage)
+    {
+        if (_ws.State != WebSocketState.Open)
+        {
+            return;
+        }
+
+        var bytes = Encoding.UTF8.GetBytes(jsonMessage);
+        await _ws.SendAsync(bytes, WebSocketMessageType.Text, true, _cts.Token);
+    }
+
     private async Task ListenAsync()
     {
         var buffer = new byte[16_384];
@@ -102,6 +114,9 @@ public sealed class AIWebSocketClient : IAsyncDisposable
                         case "stream_end":
                         case "stream_cancelled":
                             await _bridge.SendStreamEndAsync();
+                            break;
+                        case "session_reset":
+                            await _bridge.SendSessionResetAsync();
                             break;
                         case "error":
                             var errPayload = doc.RootElement.TryGetProperty("payload", out var p) ? p.GetString() ?? "Unknown error" : "Unknown error";

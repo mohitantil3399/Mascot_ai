@@ -61,21 +61,12 @@ public static partial class WindowManagement
     }
 
     /// <summary>
-    /// Dynamically toggles click-through pass-through based on mouse coordinates.
-    /// Called when the mouse hovers over transparent background vs React UI controls.
+    /// Re-asserts HWND_TOPMOST status without re-running DWM extensions or changing styles.
+    /// Used by periodic maintenance timers to keep window above desktop icons.
     /// </summary>
-    public static void SetClickThrough(Window window, bool passThrough)
+    public static void EnsureTopmost(Window window)
     {
         var hwnd = new WindowInteropHelper(window).EnsureHandle();
-        int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-
-        if (passThrough)
-        {
-            SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_TRANSPARENT);
-        }
-        else
-        {
-            SetWindowLong(hwnd, GWL_EXSTYLE, exStyle & ~WS_EX_TRANSPARENT);
-        }
+        SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
     }
 }

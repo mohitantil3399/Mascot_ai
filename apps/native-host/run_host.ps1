@@ -5,5 +5,9 @@ if (-not (Test-Path $DotnetExe)) {
     $DotnetExe = "dotnet"
 }
 
-Write-Host "Running Desktop Companion Native Host using $DotnetExe..." -ForegroundColor Cyan
-& $DotnetExe run --project "$PSScriptRoot\DesktopCompanion.csproj"
+Write-Host "Building Desktop Companion Native Host using $DotnetExe..." -ForegroundColor Cyan
+& $DotnetExe build "$PSScriptRoot\DesktopCompanion.csproj" --nologo
+
+$DllPath = "$PSScriptRoot\bin\Debug\net9.0-windows10.0.19041.0\DesktopCompanion.dll"
+Write-Host "Running DesktopCompanion.dll via trusted dotnet host process..." -ForegroundColor Green
+& $DotnetExe "$DllPath"

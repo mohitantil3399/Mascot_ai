@@ -1,5 +1,5 @@
 # inference/engine.py
-# 2026 Standard: vLLM -> Ollama -> OpenAI fallback chain
+# 2026 Standard: Mistral -> OpenRouter -> OpenAI fallback chain (LM Studio / Ollama in comments)
 import base64
 import os
 import asyncio
@@ -8,9 +8,6 @@ from typing import AsyncIterator
 from openai import AsyncOpenAI
 from PIL import Image
 
-# Provider configuration — ordered by preference. Base URLs/models are
-# overridable via env vars so this works on any machine, not just the one
-# it was originally written on.
 # Simple zero-dependency .env file loader so environment variables are loaded automatically
 def _load_env_files():
     for env_path in [
@@ -37,7 +34,11 @@ _load_env_files()
 # Provider configuration — ordered by preference. Base URLs/models are
 # overridable via env vars so this works on any machine.
 PROVIDERS = [
-    # Commented out offline LLM / LM Studio first approach for now:
+    # -------------------------------------------------------------------------
+    # Offline / Local LLM support (commented out by default).
+    # To enable local offline inference via LM Studio or Ollama, uncomment
+    # the dictionary entries below and ensure the local server is running.
+    # -------------------------------------------------------------------------
     # {
     #     "name": "LM Studio (localhost Qwen2.5-VL)",
     #     "base_url": os.environ.get("LMSTUDIO_BASE_URL", "http://localhost:1234/v1"),
@@ -45,11 +46,14 @@ PROVIDERS = [
     #     "model": os.environ.get("LMSTUDIO_MODEL", "qwen2.5-vl-3b-instruct"),
     # },
     # {
-    #     "name": "Ollama (local CPU fallback)",
+    #     "name": "Ollama (local CPU/GPU fallback)",
     #     "base_url": os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434/v1"),
     #     "api_key": "local",
     #     "model": os.environ.get("OLLAMA_MODEL", "llava"),
     # },
+    # -------------------------------------------------------------------------
+    # External Cloud API Stack (Supported Natively)
+    # -------------------------------------------------------------------------
     {
         "name": "Mistral Pixtral Vision (Cloud API)",
         "base_url": os.environ.get("MISTRAL_BASE_URL", "https://api.mistral.ai/v1"),
@@ -57,7 +61,13 @@ PROVIDERS = [
         "model": os.environ.get("MISTRAL_MODEL", "pixtral-12b-2409"),
     },
     {
-        "name": "OpenAI GPT-4o (cloud fallback)",
+        "name": "OpenRouter Vision API",
+        "base_url": os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
+        "api_key": os.environ.get("OPENROUTER_API_KEY") or os.environ.get("openrouter_api_key") or "missing-key",
+        "model": os.environ.get("OPENROUTER_MODEL", "openai/gpt-4o-mini"),
+    },
+    {
+        "name": "OpenAI GPT-4o (Cloud API)",
         "base_url": os.environ.get("OPENAI_BASE_URL") or None,  # Uses default OpenAI base URL
         "api_key": os.environ.get("OPENAI_API_KEY") or "dummy-key",
         "model": os.environ.get("OPENAI_MODEL", "gpt-4o"),
@@ -86,32 +96,65 @@ class LocalLLM:
         return base64.b64encode(image_bytes).decode("utf-8")
 
     async def stream_vision(
-        self, prompt: str, image_bytes: bytes, system_prompt: str = ""
+        self,
+        prompt: str,
+        image_bytes: bytes,
+        system_prompt: str = "",
+        session_history: list[dict] | None = None,
     ) -> AsyncIterator[str]:
         """
-        Stream vision response with automatic provider fallback.
+        Stream vision response with automatic provider fallback and multi-turn session context.
+        session_history uses dictionaries with roles: 'system', 'model_response', and 'User_query'.
         """
         b64_image = self._to_base64(image_bytes)
 
+        # If no session history is passed, build a temporary single-turn history
+        if session_history is None:
+            session_history = []
+            if system_prompt:
+                session_history.append({"role": "system", "content": system_prompt})
+            session_history.append({"role": "User_query", "content": prompt})
+
+        # Convert session dictionary format ('system', 'model_response', 'User_query')
+        # into standard OpenAI format ('system', 'assistant', 'user')
+        # Find the index of the most recent User_query so only that turn receives the image block,
+        # keeping all previous historical turns strictly text-only to prevent token bloat.
+        last_user_idx = -1
+        for idx in range(len(session_history) - 1, -1, -1):
+            if session_history[idx].get("role") == "User_query":
+                last_user_idx = idx
+                break
+
         messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({
-            "role": "user",
-            "content": [
-                {"type": "text", "text": prompt},
-                {
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{b64_image}"},
-                },
-            ],
-        })
+        for idx, entry in enumerate(session_history):
+            role_map = {
+                "system": "system",
+                "model_response": "assistant",
+                "User_query": "user",
+            }
+            mapped_role = role_map.get(entry.get("role"), "user")
+            content = entry.get("content", "")
+
+            # Attach image_url strictly only to the most recent User_query
+            if idx == last_user_idx and image_bytes:
+                messages.append({
+                    "role": mapped_role,
+                    "content": [
+                        {"type": "text", "text": str(content)},
+                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64_image}"}},
+                    ],
+                })
+            else:
+                messages.append({
+                    "role": mapped_role,
+                    "content": str(content),
+                })
 
         for i, (client, provider) in enumerate(zip(self.clients, PROVIDERS)):
             try:
                 if client is None:
                     raise RuntimeError(f"Client for provider '{provider.get('name')}' failed to initialize.")
-                print(f"[Engine] Attempting inference via provider: {provider['name']}")
+                print(f"[Engine] Attempting inference via provider: {provider['name']} (model: {provider['model']})")
                 response = await client.chat.completions.create(
                     model=provider["model"],
                     messages=messages,
@@ -132,3 +175,4 @@ class LocalLLM:
                     return
                 print(f"[Engine] Automatic fallback to next provider...")
                 await asyncio.sleep(0.1)
+

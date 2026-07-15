@@ -48,51 +48,57 @@ body, html, #root {
   pointer-events: none;
 }
 
-/* Connection Status Pill */
+/* Connection Status Pill - Compact 30% micro pill design */
 .status-pill {
   position: absolute;
-  top: 24px;
-  left: 24px;
+  top: 12px;
+  left: 12px;
   pointer-events: auto;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
+  gap: 4px;
+  padding: 2px 6px;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.55rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background: rgba(18, 18, 26, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   transition: var(--transition-smooth);
   z-index: 100;
+  opacity: 0.75;
+  transform: scale(0.65);
+  transform-origin: top left;
+}
+
+.status-pill:hover {
+  opacity: 1;
+  transform: scale(0.85);
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
 }
 
-.status-connected .status-dot { background: var(--color-success); box-shadow: 0 0 8px var(--color-success); }
+.status-connected .status-dot { background: var(--color-success); box-shadow: 0 0 6px var(--color-success); }
 .status-connecting .status-dot { background: var(--color-warning); animation: pulse 1.5s infinite; }
 .status-reconnecting .status-dot { background: var(--color-warning); animation: pulse 0.8s infinite; }
-.status-error .status-dot { background: var(--color-error); box-shadow: 0 0 8px var(--color-error); }
+.status-error .status-dot { background: var(--color-error); box-shadow: 0 0 6px var(--color-error); }
 
 /* 3D Pet Container */
 .pet-container {
   position: absolute;
-  bottom: 24px;
-  right: 360px;
-  width: 220px;
-  height: 220px;
+  width: 160px;
+  height: 160px;
   pointer-events: auto;
   cursor: grab;
   filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .pet-container:hover {
@@ -118,7 +124,7 @@ body, html, #root {
   position: absolute;
   bottom: 24px;
   right: 24px;
-  width: 330px;
+  width: 360px;
   max-height: 480px;
   display: flex;
   flex-direction: column;

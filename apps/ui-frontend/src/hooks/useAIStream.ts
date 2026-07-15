@@ -21,5 +21,10 @@ export const useAIStream = () => {
     setIsStreaming(false);
   }, []);
 
-  return { response, isStreaming, startStream, appendChunk, endStream };
+  const resetStream = useCallback(() => {
+    responseRef.current = '';
+    setResponse('');
+  }, []);
+
+  return { response, isStreaming, startStream, appendChunk, endStream, resetStream };
 };
