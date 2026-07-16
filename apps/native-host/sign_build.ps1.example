@@ -1,0 +1,49 @@
+# ==========================================================================
+# sign_build.ps1.example — Code-sign the Desktop Companion build output.
+#
+# SETUP: Copy this file to "sign_build.ps1" and run after building.
+#
+# This script signs all .dll and .exe files in the build output directory
+# with a code-signing certificate. If no certificate is found, it creates
+# a self-signed one for local development (not suitable for distribution).
+#
+# For production releases, replace the certificate lookup with your own
+# trusted code-signing certificate (e.g., from DigiCert, Sectigo, etc.).
+# ==========================================================================
+
+# --- Certificate Configuration ---
+# Look for an existing code-signing certificate in the current user's store.
+$cert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
+
+if (-not $cert) {
+    Write-Host "No code-signing certificate found. Creating a self-signed certificate for local dev..." -ForegroundColor Yellow
+    Write-Host "NOTE: Self-signed certs are for development only. Use a trusted cert for distribution." -ForegroundColor Yellow
+    $cert = New-SelfSignedCertificate `
+        -DnsName "DesktopCompanionLocalDev" `
+        -Type CodeSigningCert `
+        -CertStoreLocation "Cert:\CurrentUser\My"
+}
+
+# --- Build Output Directory ---
+# Update this path if your target framework or build configuration differs.
+$targetDir = "$PSScriptRoot\bin\Debug\net9.0-windows10.0.19041.0"
+
+if (-not (Test-Path $targetDir)) {
+    Write-Host "Error: Build output directory not found at $targetDir" -ForegroundColor Red
+    Write-Host "Run 'dotnet build' first, then re-run this script." -ForegroundColor Yellow
+    exit 1
+}
+
+# --- Sign All Binaries ---
+$files = Get-ChildItem -Path $targetDir -Include "*.dll", "*.exe" -Recurse
+$signedCount = 0
+
+foreach ($file in $files) {
+    Unblock-File $file.FullName -ErrorAction SilentlyContinue
+    $result = Set-AuthenticodeSignature -FilePath $file.FullName -Certificate $cert -ErrorAction SilentlyContinue
+    if ($result.Status -eq "Valid") {
+        $signedCount++
+    }
+}
+
+Write-Host "Signed $signedCount binaries in $targetDir with cert: $($cert.Subject)" -ForegroundColor Green

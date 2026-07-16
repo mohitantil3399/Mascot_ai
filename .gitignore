@@ -124,3 +124,11 @@ TestResults/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+
+# --- User-Specific Launch & Build Scripts ---
+# These contain machine-specific paths (e.g. custom .NET SDK location).
+# Copy the corresponding .example files and edit for your environment.
+launch_all.bat
+apps/native-host/run_host.ps1
+apps/native-host/sign_build.ps1

@@ -1,24 +1,36 @@
 @echo off
-REM launch_all.bat — starts all three tiers of the Desktop Companion.
-REM Place this file at the repo root (next to /apps) and just double-click it,
-REM or run it from a terminal. Each tier opens in its own window so you can
-REM see its logs; closing a window stops that tier.
+REM ==========================================================================
+REM launch_all.bat.example — Starts all three tiers of Antigravity Desktop Companion.
+REM
+REM SETUP: Copy this file to "launch_all.bat" and edit any paths as needed.
+REM        Place it at the repo root (next to /apps) and double-click to run.
+REM        Each tier opens in its own terminal window for log visibility.
+REM ==========================================================================
 
 setlocal
 set ROOT=%~dp0
-set DOTNET_EXE=D:\SyncDevice\dotnet_sdk\dotnet.exe
 
+REM --- .NET SDK Configuration ---
+REM By default, this uses "dotnet" from your system PATH.
+REM If you have a custom .NET SDK location, set DOTNET_EXE below:
+REM   set DOTNET_EXE=C:\path\to\your\dotnet\dotnet.exe
+set DOTNET_EXE=dotnet
+
+REM --- Tier 1: AI Orchestrator (Python / FastAPI) ---
 echo Starting AI Orchestrator (Python / FastAPI)...
 start "AI Orchestrator" cmd /k "cd /d "%ROOT%apps\ai-orchestrator" && if exist .venv\Scripts\activate.bat (call .venv\Scripts\activate.bat && python main.py) else (if exist .venv\Scripts\python.exe (.venv\Scripts\python.exe main.py) else (echo No .venv found - please run: uv venv .venv ^&^& uv pip install -e .))"
 
+REM --- Tier 2: UI Frontend (React / Vite) ---
 echo Starting UI (React / Vite)...
 start "UI Frontend" cmd /k "cd /d "%ROOT%apps\ui-frontend" && (if not exist node_modules (echo Installing npm dependencies... && call npm install)) && npm run dev"
 
+REM --- Wait for backend/dev server startup ---
 echo Waiting a few seconds for the backend/dev server to come up...
 timeout /t 8 /nobreak >nul
 
+REM --- Tier 3: Native Host (C# / WPF) ---
 echo Starting Native Host (C# / WPF)...
-start "Native Host" powershell -NoExit -ExecutionPolicy Bypass -Command "& '%DOTNET_EXE%' build '%ROOT%apps\native-host\DesktopCompanion.csproj'; & '%ROOT%apps\native-host\run_host.ps1'"
+start "Native Host" powershell -NoExit -Command "& '%DOTNET_EXE%' build '%ROOT%apps\native-host\DesktopCompanion.csproj'; & '%ROOT%apps\native-host\run_host.ps1'"
 
 echo.
 echo All three tiers launching in separate windows:

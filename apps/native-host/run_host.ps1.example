@@ -1,0 +1,30 @@
+# ==========================================================================
+# run_host.ps1.example — Build and run the Desktop Companion Native Host.
+#
+# SETUP: Copy this file to "run_host.ps1" and edit paths as needed.
+# ==========================================================================
+
+# --- .NET SDK Configuration ---
+# By default, this uses "dotnet" from your system PATH.
+# If you have a custom .NET SDK installation, uncomment and edit the line below:
+#   $DotnetExe = "C:\path\to\your\dotnet\dotnet.exe"
+$DotnetExe = "dotnet"
+
+if (-not (Get-Command $DotnetExe -ErrorAction SilentlyContinue)) {
+    Write-Host "Error: dotnet SDK not found. Please install .NET 9 SDK or set the path above." -ForegroundColor Red
+    Write-Host "Download from: https://dotnet.microsoft.com/download/dotnet/9.0" -ForegroundColor Yellow
+    exit 1
+}
+
+Write-Host "Building Desktop Companion Native Host using $DotnetExe..." -ForegroundColor Cyan
+& $DotnetExe build "$PSScriptRoot\DesktopCompanion.csproj" --nologo
+
+$DllPath = "$PSScriptRoot\bin\Debug\net9.0-windows10.0.19041.0\DesktopCompanion.dll"
+if (-not (Test-Path $DllPath)) {
+    Write-Host "Error: Build output not found at $DllPath" -ForegroundColor Red
+    Write-Host "Check the build output above for errors." -ForegroundColor Yellow
+    exit 1
+}
+
+Write-Host "Running DesktopCompanion.dll via dotnet host process..." -ForegroundColor Green
+& $DotnetExe "$DllPath"
