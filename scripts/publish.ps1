@@ -107,16 +107,3 @@ Pop-Location
 $env:UV_PUBLISH_TOKEN = ""
 Ok "Published mascot-ai $Version to PyPI!"
 
-# ── Step 8: Remind about GitHub Release ──────────────────────────────────────
-Write-Host ""
-Write-Host "============================================================" -ForegroundColor Yellow
-Write-Host " NEXT: Create a GitHub Release for v$Version" -ForegroundColor Yellow
-Write-Host "============================================================" -ForegroundColor Yellow
-Write-Host " Upload this file as a release asset:" -ForegroundColor White
-Write-Host "   $NativeHost\publish\Release\DesktopCompanion.exe" -ForegroundColor Cyan
-Write-Host ""
-Write-Host " URL: https://github.com/mohitantil3399/Mascot_ai/releases/new" -ForegroundColor White
-Write-Host " Tag: v$Version" -ForegroundColor White
-Write-Host "============================================================" -ForegroundColor Yellow
-Write-Host ""
-Write-Host "Then REVOKE your PyPI token at: https://pypi.org/manage/account/token/" -ForegroundColor Red
