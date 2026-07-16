@@ -67,99 +67,79 @@ An ephemeral, real-time **visual AI assistant** that lives on your Windows deskt
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repository
+### Option A: End-User Installation (PyPI Package) — Recommended ⭐
 
-```bash
-git clone https://github.com/mohitantil3399/Mascot_ai.git
-cd Mascot_ai
-```
-
-### 2. Configure Environment
-
-```bash
-# Copy the example environment file and add your API key
-cp apps/ai-orchestrator/.env.example apps/ai-orchestrator/.env
-# Edit .env and set your MISTRAL_API_KEY (free at https://console.mistral.ai)
-```
-
-### 3. Start the AI Orchestrator (Tier 1)
+If you simply want to run Antigravity Desktop Companion right away on your Windows PC without compiling source code, install our official Python package:
 
 ```powershell
-cd apps/ai-orchestrator
-uv venv .venv --python 3.12
-uv pip install -e .
-.venv\Scripts\python.exe main.py
-# Server starts at http://localhost:8000
+pip install mascot-ai
 ```
 
-### 4. Start the UI Frontend (Tier 2)
+Once installed, use the `mascot-ai` command anywhere in your terminal:
 
 ```powershell
-cd apps/ui-frontend
-npm install
-npm run dev
-# Dev server starts at http://localhost:3000
+# 1. Configure your API keys interactively (only required once!)
+mascot-ai env
+
+# 2. Launch the desktop companion overlay
+mascot-ai start
 ```
 
-### 5. Start the Native Host (Tier 3)
-
-```powershell
-# Copy and customize the example scripts first:
-cp apps/native-host/run_host.ps1.example apps/native-host/run_host.ps1
-
-cd apps/native-host
-dotnet build
-.\run_host.ps1
-```
-
-### One-Click Launch (Optional)
-
-```powershell
-# Copy and customize the example launch script:
-cp launch_all.bat.example launch_all.bat
-# Edit launch_all.bat if needed, then double-click it to start all three tiers.
-```
-
-### 🖥️ Developer CLI — `mascot` command
-
-Install the `mascot` CLI once from the repo root and manage the entire project from a single command:
-
-```powershell
-# From repo root — one-time install into the orchestrator's venv
-cd apps/ai-orchestrator
-uv pip install -e ../../   # installs mascot-cli into this venv
-
-# Activate the venv
-.venv\Scripts\Activate.ps1
-
-# Now use the mascot command:
-mascot --help
-```
-
-**Available commands:**
+That's it! On the first launch, `mascot-ai start` will automatically fetch the visual `.exe` overlay binary from GitHub Releases, start the bundled AI orchestrator (`port 8000`) and UI server (`port 3000`), and launch your desktop companion window.
 
 | Command | Description |
 |---|---|
-| `mascot env` | Interactive first-time setup — copies `.env.example` and prompts for API keys |
-| `mascot env --force` | Re-run key setup even if `.env` already exists |
-| `mascot install` | Install all dependencies (Python + Node + .NET) |
-| `mascot install ui` | Install only Node.js frontend deps |
-| `mascot install orchestrator` | Install only Python backend deps |
-| `mascot install host` | Restore only .NET native host deps |
-| `mascot start` | Start all 3 tiers in one terminal (Ctrl+C to stop all) |
-| `mascot start orchestrator` | Start only the Python FastAPI server (port 8000) |
-| `mascot start ui` | Start only the Vite dev server (port 3000) |
-| `mascot start host` | Build and start only the .NET WPF host |
-| `mascot build` | Build production artifacts (UI + dotnet publish) |
-| `mascot status` | Probe ports 8000 & 3000 and show a health table |
+| `mascot-ai env` | Interactive API key setup (stores configuration securely in `~/.mascot-ai/.env`) |
+| `mascot-ai env --force` | Re-run key setup anytime |
+| `mascot-ai start` | Start all backend and overlay services in one terminal (Ctrl+C to stop all) |
+| `mascot-ai status` | Probe active ports and display service health status |
 
-**Recommended first-run workflow:**
+---
+
+### Option B: Developer & Contributor Setup (Source Code)
+
+If you are modifying code across the 3 tiers (FastAPI backend, React UI, or WPF native host):
+
+#### 1. Clone the Repository & Install `mascot` Developer CLI
+
 ```powershell
-mascot env        # set up .env and API keys
-mascot install    # install all dependencies
-mascot start      # launch everything
+git clone https://github.com/mohitantil3399/Mascot_ai.git
+cd Mascot_ai
+
+# One-time install of the developer CLI (`mascot`) into your orchestrator venv:
+cd apps/ai-orchestrator
+uv pip install -e ../../
+.venv\Scripts\Activate.ps1
 ```
 
+#### 2. Configure Environment & Dependencies
+
+```powershell
+# Interactive .env configuration
+mascot env
+
+# Install all dependencies across Python, Node.js, and C# (.NET)
+mascot install
+```
+
+#### 3. Launching Services for Development
+
+```powershell
+# Launch all 3 tiers with live combined terminal output
+mascot start
+```
+
+**Developer CLI (`mascot`) Commands Overview:**
+
+| Command | Description |
+|---|---|
+| `mascot env` | Interactive local setup — copies `.env.example` to `apps/ai-orchestrator/.env` |
+| `mascot install` | Install all dependencies across Python (`uv`), Node (`npm`), and C# (`dotnet`) |
+| `mascot install [tier]` | Install specific tier dependencies (`orchestrator`, `ui`, `host`) |
+| `mascot start` | Start all 3 tiers in sequence with an 8s delay before the native host |
+| `mascot start [tier]` | Start only `orchestrator`, `ui`, or `host` individually |
+| `mascot build` | Build production artifacts (`npm run build` + `dotnet publish`) |
+| `mascot status` | Probe ports 8000 & 3000 and display service health |
 
 
 ## 📁 Project Structure
