@@ -5,11 +5,11 @@
   --bg-glass-hover: rgba(22, 25, 40, 0.88);
   --border-glass: rgba(255, 255, 255, 0.12);
   --border-glow: rgba(139, 92, 246, 0.5);
-  
+
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-accent: #c084fc;
-  
+
   --color-primary: #8b5cf6;
   --color-primary-glow: rgba(139, 92, 246, 0.35);
   --color-success: #10b981;
@@ -19,7 +19,7 @@
   /* Typography */
   --font-main: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-code: 'JetBrains Mono', monospace;
-  
+
   /* Transitions & Shadows */
   --shadow-glass: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 24px var(--color-primary-glow);
   --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -31,12 +31,15 @@
   padding: 0;
 }
 
-body, html, #root {
+body,
+html,
+#root {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
   font-family: var(--font-main);
-  background: transparent; /* Mandatory for C# WPF click-through overlay */
+  background: transparent;
+  /* Mandatory for C# WPF click-through overlay */
   color: var(--text-primary);
   user-select: none;
 }
@@ -85,10 +88,25 @@ body, html, #root {
   border-radius: 50%;
 }
 
-.status-connected .status-dot { background: var(--color-success); box-shadow: 0 0 6px var(--color-success); }
-.status-connecting .status-dot { background: var(--color-warning); animation: pulse 1.5s infinite; }
-.status-reconnecting .status-dot { background: var(--color-warning); animation: pulse 0.8s infinite; }
-.status-error .status-dot { background: var(--color-error); box-shadow: 0 0 6px var(--color-error); }
+.status-connected .status-dot {
+  background: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
+}
+
+.status-connecting .status-dot {
+  background: var(--color-warning);
+  animation: pulse 1.5s infinite;
+}
+
+.status-reconnecting .status-dot {
+  background: var(--color-warning);
+  animation: pulse 0.8s infinite;
+}
+
+.status-error .status-dot {
+  background: var(--color-error);
+  box-shadow: 0 0 6px var(--color-error);
+}
 
 /* 3D Pet Container */
 .pet-container {
@@ -97,7 +115,7 @@ body, html, #root {
   height: 160px;
   pointer-events: auto;
   cursor: grab;
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -124,8 +142,8 @@ body, html, #root {
   position: absolute;
   bottom: 24px;
   right: 24px;
-  width: 360px;
-  max-height: 480px;
+  width: 320px;
+  max-height: 420px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -150,7 +168,7 @@ body, html, #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: 10px;
 }
@@ -221,10 +239,10 @@ body, html, #root {
   flex-direction: column;
   gap: 10px;
   font-size: 0.9rem;
-  line-height: 1.5;
+  line-height: 1;
   color: var(--text-primary);
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.2) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 .ai-message {
@@ -311,15 +329,31 @@ body, html, #root {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 @keyframes blink {
-  to { visibility: hidden; }
+  to {
+    visibility: hidden;
+  }
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

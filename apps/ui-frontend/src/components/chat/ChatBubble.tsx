@@ -20,7 +20,7 @@ export default function ChatBubble({ response, isStreaming, onStreamEnd }: ChatB
     return (
       <div className="chat-bubble-viewport">
         <div className="ai-message" style={{ borderLeftColor: '#8b5cf6' }}>
-          👋 <strong>Antigravity Companion Ready!</strong> Ask me about your screen, UI layout bugs, or code snippets.
+          👋 <strong>Companion Ready!</strong>
         </div>
       </div>
     );
@@ -32,7 +32,7 @@ export default function ChatBubble({ response, isStreaming, onStreamEnd }: ChatB
         {response}
       </div>
       {isStreaming && (
-        <button 
+        <button
           onClick={onStreamEnd}
           style={{
             alignSelf: 'flex-end',
