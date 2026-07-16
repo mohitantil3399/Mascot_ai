@@ -120,7 +120,47 @@ cp launch_all.bat.example launch_all.bat
 # Edit launch_all.bat if needed, then double-click it to start all three tiers.
 ```
 
----
+### 🖥️ Developer CLI — `mascot` command
+
+Install the `mascot` CLI once from the repo root and manage the entire project from a single command:
+
+```powershell
+# From repo root — one-time install into the orchestrator's venv
+cd apps/ai-orchestrator
+uv pip install -e ../../   # installs mascot-cli into this venv
+
+# Activate the venv
+.venv\Scripts\Activate.ps1
+
+# Now use the mascot command:
+mascot --help
+```
+
+**Available commands:**
+
+| Command | Description |
+|---|---|
+| `mascot env` | Interactive first-time setup — copies `.env.example` and prompts for API keys |
+| `mascot env --force` | Re-run key setup even if `.env` already exists |
+| `mascot install` | Install all dependencies (Python + Node + .NET) |
+| `mascot install ui` | Install only Node.js frontend deps |
+| `mascot install orchestrator` | Install only Python backend deps |
+| `mascot install host` | Restore only .NET native host deps |
+| `mascot start` | Start all 3 tiers in one terminal (Ctrl+C to stop all) |
+| `mascot start orchestrator` | Start only the Python FastAPI server (port 8000) |
+| `mascot start ui` | Start only the Vite dev server (port 3000) |
+| `mascot start host` | Build and start only the .NET WPF host |
+| `mascot build` | Build production artifacts (UI + dotnet publish) |
+| `mascot status` | Probe ports 8000 & 3000 and show a health table |
+
+**Recommended first-run workflow:**
+```powershell
+mascot env        # set up .env and API keys
+mascot install    # install all dependencies
+mascot start      # launch everything
+```
+
+
 
 ## 📁 Project Structure
 

@@ -1,0 +1,53 @@
+[project]
+name = "mascot-ai"
+version = "1.0.0"
+description = "Antigravity Desktop Companion — AI-powered transparent desktop overlay with a 3D mascot"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "GPL-3.0"}
+keywords = ["ai", "desktop", "companion", "mascot", "overlay", "vision", "llm", "windows"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Topic :: Desktop Environment",
+]
+
+dependencies = [
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "fastapi>=0.111.0",
+    "uvicorn>=0.30.0",
+    "openai>=1.35.0",
+    "pillow>=10.3.0",
+    "numpy>=1.26.0",
+    "python-multipart>=0.0.9",
+    "websockets>=12.0",
+]
+
+[project.scripts]
+mascot-ai = "mascot_ai.cli.mascot:cli"
+
+[project.urls]
+Homepage   = "https://github.com/mohitantil3399/Mascot_ai"
+Repository = "https://github.com/mohitantil3399/Mascot_ai"
+"Bug Tracker" = "https://github.com/mohitantil3399/Mascot_ai/issues"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where    = ["."]
+include  = ["mascot_ai*"]
+
+[tool.setuptools.package-data]
+mascot_ai = [
+    "ui_dist/*",
+    "ui_dist/**/*",
+]

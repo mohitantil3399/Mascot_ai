@@ -132,3 +132,13 @@ Thumbs.db
 launch_all.bat
 apps/native-host/run_host.ps1
 apps/native-host/sign_build.ps1
+
+# --- PyPI / Build Artifacts ---
+# Native host Release publish output (uploaded to GitHub Releases, not committed)
+apps/native-host/publish/
+# Generated mascot_ai package data (copied from build artifacts, rebuilt before each publish)
+mascot_ai/ui_dist/
+mascot_ai/orchestrator/
+# PyPI build output
+dist/
+*.egg-info/

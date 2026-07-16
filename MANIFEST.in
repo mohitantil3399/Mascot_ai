@@ -1,0 +1,3 @@
+recursive-include mascot_ai/ui_dist *
+include mascot_ai/orchestrator/*.py
+recursive-include mascot_ai/orchestrator *
