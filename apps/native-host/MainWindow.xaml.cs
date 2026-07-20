@@ -34,6 +34,8 @@ public partial class MainWindow : Window
     {
         _hwnd = new WindowInteropHelper(this).EnsureHandle();
         
+        // Register our overlay handle with the capture service so it can hide us during screenshots
+        _capture.SetOverlayHandle(_hwnd);
         // Get DPI scale for accurate physical pixel conversion
         var dpi = VisualTreeHelper.GetDpi(this);
         _dpiScaleX = dpi.DpiScaleX;

@@ -51,3 +51,11 @@ Added sessions of conversation , making a session limited to one time interactio
 It was difficult for the user to launch all three different programs for AI assistant in windows separately. We had to make it easier for the user to launch all three different programs for AI assistant in windows .
 ## Solution 
 I fixed it by adding a launch_all.bat file that launches the assistant and also gives a short description of each task.
+
+## 9
+**Chatbot detecting itself in screenshots (Self-Detection)**
+The floating chatbot overlay was being captured as part of the screenshot sent to the LLM. The LLM would then describe the chatbot's own UI elements (the "Share Screenshot & Analyze" button, response panel, mascot bubble) as if they were part of the user's screen content — completely defeating the purpose of screen analysis.
+### Solution
+Fixed using a dual-approach strategy:
+1. **Hide-before-capture (C# Native Host):** Modified `ScreenCapture.cs` to use `SetWindowPos` Win32 calls to temporarily hide the WPF overlay window right before `CopyFromScreen` and restore it immediately after capture. A 50ms delay is added between hiding and capturing to let the DWM compositor flush the previous frame.
+2. **System prompt guard (Python AI Orchestrator):** Enhanced the system prompt in `prompts.py` with explicit self-awareness instructions telling the LLM that it IS the overlay and must never describe its own UI elements, treating them as invisible — like a person shouldn't describe their own eyeball in their field of vision.
